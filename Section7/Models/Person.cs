@@ -3,13 +3,13 @@ using Section7.CustomValidators;
 using System.ComponentModel.DataAnnotations;
 
 namespace Section7.Models;
-public class Person
+public class Person : IValidatableObject
 {
     [Required(ErrorMessage ="{0} can not be empty or null.")]
     [Display (Name ="Person Name")]
     [StringLength (50, MinimumLength = 3, ErrorMessage ="{0} should be between {2} and " +
         "{1} characters long")]
-    [RegularExpression("^[A-Za-z .]$", ErrorMessage ="{0} should contain only alphabets," +
+    [RegularExpression("^[A-Za-z .]*$", ErrorMessage ="{0} should contain only alphabets," +
         "space and dot (.)")]
     public string? PersonName { get; set; } /*= "Jack";*/
 
@@ -38,13 +38,30 @@ public class Person
     public double? Price { get; set; } = 22323232;
 
 
-    [MinimumYearValidator]
-    public DateTime DateOfBirth { get; set; }
+    [MinimumYearValidator(2005, ErrorMessage ="Date of Birth should not be newer than Jan 01, {0}.")]
+    public DateTime? DateOfBirth { get; set; }
+
+    public DateTime? FromDate { get; set; }
+
+    [DateRangeValidator("FromDate", ErrorMessage="'From Date' should be older than or equal to 'To Date'.")]
+    public DateTime? ToDate { get; set; }
+
+    public int? Age { get; set; }
 
     public override string ToString()
     {
         return $"Person name: {PersonName}, \nEmail      : {Email}, \nPhone      : {Phone}, \n" +
           $"Password   : {Password}, \nConfirm Password: {ConfirmPassword}, \nPrice      : {Price}\n";
+    }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (DateOfBirth.HasValue == false && Age.HasValue == false)
+        {
+            yield return new ValidationResult("Either of Date of Birth or Age" +
+                " must be supplied", new[] {nameof(Age)}); 
+        }
+
     }
 }
 
