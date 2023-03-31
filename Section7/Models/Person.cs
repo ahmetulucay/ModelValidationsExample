@@ -39,6 +39,7 @@ public class Person : IValidatableObject
 
 
     [MinimumYearValidator(2005, ErrorMessage ="Date of Birth should not be newer than Jan 01, {0}.")]
+    //[BindNever]
     public DateTime? DateOfBirth { get; set; }
 
     public DateTime? FromDate { get; set; }
