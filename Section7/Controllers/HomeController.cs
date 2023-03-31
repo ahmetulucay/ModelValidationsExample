@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Section7.CustomModelBinders;
 using Section7.Models;
 
 namespace Section7.Controllers;
@@ -11,7 +12,7 @@ public class HomeController : Controller
     }
 
     [Route("register")]
-    public IActionResult Index(Person person)
+    public IActionResult Index([FromBody] [ModelBinder(BinderType = typeof(PersonModelBinder))]Person person)
     {
         if (!ModelState.IsValid)
         {
